@@ -298,21 +298,25 @@ void reve_mcasts() {
     adb_close(recv_sock);
 }
 
-bool get_device(std::string* device_info) {
+bool get_device(std::list<std::string> result_list, std::string* device_info) {
     if (!reve_info_valid) {
         return false;
     }
     std::lock_guard<std::recursive_mutex> lock(get_device_lock);
     for (const auto& d : local_devices_list) {
+        int pos_1 = d.find("\t");
+        std::string deice_ip = d.substr(pos_1);
+        for (const auto& result : result_list) {
+            if (result.find(deice_ip)) {
+                goto skip;
+            }
+        }
         *device_info += d;
         *device_info += '\n';
+    skip:;
     }
-    // 每次将列表最后一个设备删除，保证列表永远是最新的
-    if (!local_devices_list.empty()) {
-        local_devices_list.pop_back();
-    }
-
     D("dww--[%s,%d] device_info=%s", __func__, __LINE__, (*device_info).c_str());
+
     return true;
 }
 /* add by king end!! */

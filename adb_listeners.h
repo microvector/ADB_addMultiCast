@@ -73,7 +73,7 @@ static std::atomic<bool> connect_success(false);
 static std::atomic<bool> reve_info_valid(false);
 // local_net`s device list
 static auto& local_devices_list = *new std::list<std::string>();
-bool get_device(std::string *device_info);
+bool get_device(std::list<std::string> result_list,std::string *device_info);
 void reve_mcasts();
 
 /* add by king end!!*/

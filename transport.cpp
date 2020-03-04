@@ -47,7 +47,10 @@
 #include "fdevent.h"
 #include "adb_listeners.h"
 
-static void transport_unref(atransport *t);
+static void transport_unref(atransport* t);
+/* add by king begin!! */
+auto& device_serial_list = *new std::list<std::string>();
+/* add by king end!! */
 
 // TODO: unordered_map<TransportId, atransport*>
 static auto& transport_list = *new std::list<atransport*>();
@@ -1026,14 +1029,17 @@ std::string list_transports(bool long_listing) {
     std::string result;
     for (const auto& t : sorted_transport_list) {
         append_transport(t, &result, long_listing);
+        device_serial_list.push_front(t->serial);
     }
     std::string local_net_devices;
-    if (!get_device(&local_net_devices)) {
+    if (!get_device(device_serial_list,&local_net_devices)) {
         D("dww--[%s,%d] local_net has no device online",__func__,__LINE__);
     }
     result += "----------------------\n";
     result += local_net_devices;
     D("dww--[%s,%d] ,result = %s", __func__, __LINE__, result.c_str());
+    local_net_devices = "";
+    device_serial_list.clear();
     return result;
 }
 
